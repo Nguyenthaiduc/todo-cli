@@ -7,13 +7,15 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/alexeyco/simpletable"
 )
 
 type item struct {
-	Task         string
-	Done         bool
-	CreateAt     time.Time
-	CompltetedAt time.Time
+	Task       string
+	Done       bool
+	CreateAt   time.Time
+	CompleteAt time.Time
 }
 
 type Todos []item
@@ -21,10 +23,10 @@ type Todos []item
 func (t *Todos) Add(task string) {
 
 	todo := item{
-		Task:         task,
-		Done:         false,
-		CreateAt:     time.Now(),
-		CompltetedAt: time.Time{},
+		Task:       task,
+		Done:       false,
+		CreateAt:   time.Now(),
+		CompleteAt: time.Time{},
 	}
 
 	*t = append(*t, todo)
@@ -36,7 +38,7 @@ func (t *Todos) Complete(index int) error {
 		return errors.New("Invalid index")
 	}
 
-	ls[index-1].CompltetedAt = time.Now()
+	ls[index-1].CompleteAt = time.Now()
 	ls[index-1].Done = true
 
 	return nil
@@ -86,8 +88,53 @@ func (t *Todos) Store(filename string) error {
 
 func (t *Todos) Print() {
 
-	for i, item := range *t {
-		i++
-		fmt.Printf("%d - %s\n", i, item.Task)
+	table := simpletable.New()
+
+	table.Header = &simpletable.Header{
+		Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: "#"},
+			{Align: simpletable.AlignCenter, Text: "Task"},
+			{Align: simpletable.AlignCenter, Text: "Done?"},
+			{Align: simpletable.AlignRight, Text: "CreatedAt"},
+			{Align: simpletable.AlignRight, Text: "CompleteAt"},
+		},
 	}
+
+	var cells [][]*simpletable.Cell
+
+	for idx, item := range *t {
+		idx++
+		task := blue(item.Task)
+		done := blue("no")
+		if item.Done {
+			task = green(fmt.Sprintf("\u2705 %s", item.Task))
+			done = green("yes")
+		}
+		cells = append(cells, *&[]*simpletable.Cell{
+			{Text: fmt.Sprintf("%d", idx)},
+			{Text: task},
+			{Text: done},
+			{Text: item.CreateAt.String()},
+			{Text: item.CompleteAt.Format(time.RFC822)},
+		})
+	}
+
+	table.Body = &simpletable.Body{Cells: cells}
+
+	table.Footer = &simpletable.Footer{Cells: []*simpletable.Cell{
+		{Align: simpletable.AlignCenter, Span: 5, Text: red(fmt.Sprintf("You have %d pending todos", t.CountPending()))},
+	}}
+
+	table.SetStyle(simpletable.StyleUnicode)
+	table.Println()
+}
+
+func (t *Todos) CountPending() int {
+	total := 0
+	for _, item := range *t {
+		if item.Done {
+			total++
+		}
+	}
+	return total
 }

@@ -1,4 +1,1 @@
-[
-    {"Task":"Sample todo","Done":true,"CreateAt":"2022-07-10T07:59:26.2272988+07:00","CompltetedAt":"2022-07-10T08:06:26.3637661+07:00"},
-    {"Task":"Sample todo","Done":false,"CreateAt":"2022-07-10T09:55:06.363941+07:00","CompltetedAt":"0001-01-01T00:00:00Z"}
-]
+[{"Task":"Sample todo","Done":true,"CreateAt":"2022-07-10T07:59:26.2272988+07:00","CompltetedAt":"2022-07-10T08:06:26.3637661+07:00"},{"Task":"Sample todo","Done":false,"CreateAt":"2022-07-10T09:55:06.363941+07:00","CompltetedAt":"0001-01-01T00:00:00Z"},{"Task":"hello","Done":false,"CreateAt":"2022-07-10T10:17:37.0038988+07:00","CompltetedAt":"0001-01-01T00:00:00Z"}]
